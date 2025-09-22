@@ -1,69 +1,67 @@
-
-
-
 import {Injectable} from '@angular/core';
-import {Actions, Effect} from '@ngrx/effects';
+import {Actions, createEffect, ofType} from '@ngrx/effects';
 import {NotesService} from '../../services/notes.service';
 import * as notesActions from '../actions/notes.actions';
-import {Observable} from 'rxjs/Observable';
+import {Observable, of} from 'rxjs';
 import {Action} from '@ngrx/store';
+import { map, switchMap, tap, startWith } from 'rxjs/operators';
 
 
 @Injectable()
 
 export class NotesEffects {
 
-  @Effect({dispatch: false}) // effect will not dispatch any actions
-  listNotes$ = this.actions$
-      .ofType(notesActions.LIST_NOTES) // requesting the socket server to list the notes for us
-      .startWith(new notesActions.NotesListed()) // List notes automatically when applications starts
-      .do(() => this.notesService.listNotes());
+  listNotes$ = createEffect(() => this.actions$.pipe(
+      ofType(notesActions.LIST_NOTES), // requesting the socket server to list the notes for us
+      startWith(new notesActions.NotesListed()), // List notes automatically when applications starts
+      tap(() => this.notesService.listNotes())
+    ), {dispatch: false});
 
-  @Effect()
-  notesListed$: Observable<Action> =
-      this.notesService.notesListed$ // listen to the socket for NOTES LIST event
-      .switchMap(notes =>
-          Observable.of(new notesActions.NotesListed(notes)) // ask the the store to populate the notes
-      );
+  notesListed$: Observable<Action> = createEffect(() => 
+      this.notesService.notesListed$.pipe( // listen to the socket for NOTES LIST event
+      switchMap(notes =>
+          of(new notesActions.NotesListed(notes)) // ask the the store to populate the notes
+      ))
+    );
 
-  @Effect({dispatch: false})
-  addNote$ = this.actions$
-      .ofType(notesActions.ADD_NOTE)
-      .map((action: notesActions.AddNote) => action.payload)
-      .do((note) => this.notesService.addNote(note));
+  addNote$ = createEffect(() => this.actions$.pipe(
+      ofType(notesActions.ADD_NOTE),
+      map((action: notesActions.AddNote) => action.payload),
+      tap((note) => this.notesService.addNote(note))
+    ), {dispatch: false});
 
-  @Effect()
-  noteAdded$: Observable<Action> =
-      this.notesService.noteAdded$
-      .switchMap(note =>
-          Observable.of(new notesActions.NoteAdded(note))
-      );
+  noteAdded$: Observable<Action> = createEffect(() =>
+      this.notesService.noteAdded$.pipe(
+      switchMap(note =>
+          of(new notesActions.NoteAdded(note))
+      ))
+    );
 
-  @Effect({dispatch: false})
-  updateNote$ = this.actions$
-      .ofType(notesActions.UPDATE_NOTE)
-      .map((action: notesActions.UpdateNote) => action.payload)
-      .do((note) => this.notesService.updateNote(note));
+  updateNote$ = createEffect(() => this.actions$.pipe(
+      ofType(notesActions.UPDATE_NOTE),
+      map((action: notesActions.UpdateNote) => action.payload),
+      tap((note) => this.notesService.updateNote(note))
+    ), {dispatch: false});
 
-  @Effect()
-  noteUpdated$: Observable<Action> =
-      this.notesService.noteUpdated$
-      .switchMap(note =>
-          Observable.of(new notesActions.NoteUpdated(note))
-      );
+  noteUpdated$: Observable<Action> = createEffect(() =>
+      this.notesService.noteUpdated$.pipe(
+      switchMap(note =>
+          of(new notesActions.NoteUpdated(note))
+      ))
+    );
 
-  @Effect({dispatch: false})
-  deleteNote$ = this.actions$
-      .ofType(notesActions.DELETE_NOTE)
-      .map((action: notesActions.UpdateNote) => action.payload)
-      .do((note) => this.notesService.deleteNote(note));
+  deleteNote$ = createEffect(() => this.actions$.pipe(
+      ofType(notesActions.DELETE_NOTE),
+      map((action: notesActions.UpdateNote) => action.payload),
+      tap((note) => this.notesService.deleteNote(note))
+    ), {dispatch: false});
 
-  @Effect()
-  noteDeleted$: Observable<Action> =
-      this.notesService.noteDeleted$
-      .switchMap(note =>
-          Observable.of(new notesActions.NoteDeleted(note))
-      );
+  noteDeleted$: Observable<Action> = createEffect(() => 
+      this.notesService.noteDeleted$.pipe(
+      switchMap(note =>
+          of(new notesActions.NoteDeleted(note))
+      ))
+    );
 
   constructor(private actions$: Actions, private notesService: NotesService) {}
 }

@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
-import {Observable} from 'rxjs/Observable';
+import {Observable} from 'rxjs';
 import {Note} from '../../../core/models/note';
 import {Store} from '@ngrx/store';
 import * as fromNotesStore from '../store';
