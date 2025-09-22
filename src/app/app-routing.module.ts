@@ -4,7 +4,7 @@ import { Routes, RouterModule } from '@angular/router';
 const routes: Routes = [
   {
     path: 'notes',
-    loadChildren: 'app/views/notes/notes.module#NotesModule'
+    loadChildren: () => import('./views/notes/notes.module').then(m => m.NotesModule)
   },
   { path: '', redirectTo: '/notes', pathMatch: 'full' },
 ];

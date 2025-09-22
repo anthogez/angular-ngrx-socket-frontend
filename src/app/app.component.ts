@@ -3,7 +3,8 @@ import {SocketService} from './core/services/socket.service';
 import * as fromRoot from './core/store';
 import * as uiActions from './core/store/actions/ui.actions';
 import {Store} from '@ngrx/store';
-import {Observable} from 'rxjs/Observable';
+import {Observable} from 'rxjs';
+import { map } from 'rxjs/operators';
 
 
 @Component({
@@ -40,10 +41,10 @@ export class AppComponent implements OnInit {
 
     this.socketStatus$ = this.store
         .select(fromRoot.getSocketStatus)
-        .map(connected => connected ? 'connected' : 'disconnected');
+        .pipe(map(connected => connected ? 'connected' : 'disconnected'));
 
     this.socket.connected$
-        .map(connected => new uiActions.SetSocketConnected(connected))
+        .pipe(map(connected => new uiActions.SetSocketConnected(connected)))
         .subscribe(this.store);
   }
 

@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import * as socketio from 'socket.io-client';
 import {environment} from '../../../environments/environment';
-import {Observable} from 'rxjs/Observable';
-import {BehaviorSubject} from 'rxjs/BehaviorSubject';
+import {Observable} from 'rxjs';
+import {BehaviorSubject} from 'rxjs';
 
 // Low level socket service api (based on rxjs)
 
